@@ -81,7 +81,6 @@ const Form = styled.div`
   input[type="submit"]:hover {
     background-color: ${colors.brand.main} !important;
     color: ${colors.brand.contrastText} !important;
-    font-size: 1.6em !important;
     box-shadow: 4px 4px 0 0 #f7a893 !important;
     outline: none !important;
     cursor: pointer;
@@ -91,9 +90,6 @@ const Form = styled.div`
     display: grid;
     justify-items: center;
     column-gap: 30px;
-    /* ${screenQuery.medium}{
-        grid-template-columns: 1fr;
-    } */
   }
   .full-width, .hs_submit {
     grid-column-start: 1;
@@ -113,107 +109,77 @@ const Form = styled.div`
   }
 `
 
-// not setting state per se, but need to define useCase out of Component scope or else gets overwritten onFormSubmitted:
-let useCase
 
-
-// props: columns, columnWidth, className, submitButtonWidth, fullWidthFields, formHeadline, formSubHeadline,
-// redirectTo, submitButtonText, formId, placeholders
 export default (props) => {
+  const uniqueClass = `hs-form-${props.formId}`
 
+  const ref = useRef(null)
+  let columns = props.columns || 3
 
-    const uniqueClass = `hs-form-${props.formId}`
-
-    const ref = useRef(null)
-    let columns = props.columns || 3
-
-    const submit = () => {
-
-        // if use case, etc. set as cookie:
-        if (useCase) {
-            // set usecase cookie, expires 4 years from now:
-            // setCookie("submittable_use_case", useCase, 1460)
-        }
-        if (props.redirectRules) {
-            props.redirectRules(useCase)
-        }
-        else if (props.dontRedirect) {
-            return
-        }
-        else if (props.redirectTo) {
-            // props.redirectState ? navigate(props.redirectTo, props.redirectState) : navigate(props.redirectTo)
-        }
-        else {
-            // navigate('/thank-you/')
-        }
+  const submit = () => {
+    if (props.dontRedirect) {
+      return
     }
+  }
 
-    useEffect(() => {
-        window.$ = window.jQuery = $
-    }, [])
+  useEffect(() => {
+    window.$ = window.jQuery = $
+  }, [])
 
-    return (
-        <Wrapper ref={ref} className={`${uniqueClass}`}>
-            <Form
-                columns={columns}
-                submitButtonWidth={props.submitButtonWidth}
-                columnWidth={props.columnWidth}
-            >
-                <HubspotForm
-                    portalId="462367"
-                    formId={props.formId}
-                    translations={{
-                        en: {
-                            submitText: props.submitButtonText,
-                            missingSelect: "Please select an option",
-                            fieldLabels: {
-                                email: props.emailLabel || "Work Email"
-                            }
-                        }
-                    }}
+  return (
+    <Wrapper ref={ref} className={`${uniqueClass}`}>
+      <Form
+        columns={columns}
+        submitButtonWidth={props.submitButtonWidth}
+        columnWidth={props.columnWidth}
+      >
+        <HubspotForm
+          portalId="462367"
+          formId={props.formId}
+          translations={{
+            en: {
+              submitText: props.submitButtonText,
+              missingSelect: "Please select an option",
+              fieldLabels: {
+                email: props.emailLabel || "Work Email"
+              }
+            }
+          }}
 
-                    onFormReady={($form, ctx) => {
-                        if (props.placeholders) {
-                            props.placeholders.forEach(placeholder => {
-                                $(`.${uniqueClass} input[name="${placeholder.name}"]`).attr(
-                                    "placeholder",
-                                    placeholder.placeholder
-                                )
-                            })
-                        }
-                        if (props.fullWidthFields) {
-                            props.fullWidthFields.forEach(field => {
-                                const isFieldset = $(`.${uniqueClass} .hs_${field}`).parent().is("fieldset")
-                                if (isFieldset) {
-                                    $(`.${uniqueClass} .hs_${field}`).parent().addClass("full-width")
-                                }
-                                else {
-                                    $(`.${uniqueClass} .hs_${field}`).addClass("full-width")
-                                }
-                            })
-                        }
+          onFormReady={($form, ctx) => {
+            if (props.placeholders) {
+              props.placeholders.forEach(placeholder => {
+                $(`.${uniqueClass} input[name="${placeholder.name}"]`).attr(
+                  "placeholder",
+                  placeholder.placeholder
+                )
+              })
+            }
+            if (props.fullWidthFields) {
+              props.fullWidthFields.forEach(field => {
+                const isFieldset = $(`.${uniqueClass} .hs_${field}`).parent().is("fieldset")
+                if (isFieldset) {
+                  $(`.${uniqueClass} .hs_${field}`).parent().addClass("full-width")
+                }
+                else {
+                  $(`.${uniqueClass} .hs_${field}`).addClass("full-width")
+                }
+              })
+            }
+          }}
 
-                        const choice = $(`.${uniqueClass} select[name="form_use_case"]`)
-                        useCase = choice.val()
+          onFormSubmitted={$form => {
+            if (props.onSubmit) {
+              props.onSubmit()
+            }
+            submit()
+          }}
 
-                        // add change listener:
-                        choice.change(() => {
-                            useCase = choice.val()
-                        })
-                    }}
-
-                    onFormSubmitted={$form => {
-                        if (props.onSubmit) {
-                            props.onSubmit()
-                        }
-                        submit()
-                    }}
-
-                    loading={<div>Loading...</div>}
-                />
-            </Form>
-        </Wrapper>
-    )
+          loading={<div>Loading...</div>}
+        />
+      </Form>
+    </Wrapper>
+  )
 }
 
 

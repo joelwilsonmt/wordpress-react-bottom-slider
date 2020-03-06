@@ -8,12 +8,13 @@ const { breakPoints: { screenQuery } } = theme
 
 const gridGap = "40px"
 const Wrapper = styled.div`
+  max-height: 100vh;
   width: 100vw;
   transition-duration: 1s;
   background-color: #6FD4DD;
   position: fixed;
   left: 0;
-  z-index: 100;
+  z-index: 2147483002; /* this oddly specific z-index is to lay over Intercom's dialog, which has a z-index of 2147483001 */
   ${props => props.open ? `bottom: 0;` : `bottom: -69vh;`}
   ${screenQuery.medium}{
     ${props => props.open ? `bottom: 0;` : `bottom: -100vh;`}
@@ -41,12 +42,45 @@ const PDFWrapper = styled.div`
   grid-template-columns: 1fr 1fr;
   grid-column-gap: ${gridGap};
   align-items: center;
-  img {
-    width: 100%;
-  }
   ${screenQuery.mobile}{
     grid-template-columns: 1fr;
-    grid-row-gap: 25px;
+    grid-row-gap: 20px;
+  }
+`
+const BackdropWrapper = styled.div`
+  position: relative;
+  order: 1;
+  ${screenQuery.mobile}{
+    order: 2;
+    max-width: 55%;
+    margin: auto;
+  }
+  @media screen and (max-width: 325px){
+    display: none;
+  }
+`
+const Backdrop = styled.img`
+  position: absolute;
+  width: 100%;
+  max-width: 75%;
+  top: -40px;
+  right: -40px;
+  z-index: -1;
+ 
+`
+const PDFImage = styled.img`
+  z-index: 1000;
+  max-width: 100%;
+  ${screenQuery.mobile}{
+    max-height: 25vh;
+  }
+`
+const TextSection = styled.div`
+  order: 2;
+  ${screenQuery.mobile}{
+    text-align: center;
+    margin-bottom: 15px;
+    order: 1;
   }
 `
 const FormWrapper = styled.div`
@@ -61,6 +95,9 @@ const Headlines = styled.div`
   h2, h5 {
     margin: 0 0 10px 0;
     font-weight: 450;
+    ${screenQuery.mobile}{
+      margin: 0 0 5px 0;
+    }
   }
 `
 const CloseButton = styled.img`
@@ -69,37 +106,23 @@ const CloseButton = styled.img`
   max-width: 40px;
   top: 10px;
   right: 10px;
-
   :hover {
     cursor: pointer;
   }
 `
-const Backdrop = styled.img`
-  position: absolute;
-  max-width: 75%;
-  top: -40px;
-  right: -40px;
-  z-index: -1;
-`
-const PDFImage = styled.img`
-  z-index: 1000;
 
-`
-const BackdropWrapper = styled.div`
-  position: relative;
-  ${screenQuery.mobile}{
-    max-width: 50%;
-    margin: auto;
-  }
-`
+
 
 
 function App() {
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
   const [seen, setHasBeenSeen] = useState(false)
   let tags = []
-  document.getElementsByClassName('tags')[0] && document.getElementsByClassName('tags')[0].children.forEach(child => tags.push(child.innerHTML.toLowerCase()))
-  // console.log("tags of page: ", tags)
+  let children
+  if (document.getElementsByClassName('tags')[0]) {
+    children = Array.from(document.getElementsByClassName('tags')[0].children)
+  }
+  if (children) { children.forEach(child => tags.push(child.innerHTML.toLowerCase())) }
 
   const shouldShow = () => {
     const hasTags = tags.includes('grants') || tags.includes('corporate giving')
@@ -143,8 +166,19 @@ function App() {
       placeholder: 'Company'
     }
   ]
-  return [
-    <button onClick={() => setOpen(!open)}>Open bottom</button>,
+
+  const redirect = () => {
+    if (tags.includes('grants')) {
+      window.open('https://info.submittable.com/transforming-grantmaking-maximizing-impact-through-improved-grants-management-download')
+    }
+    else if (tags.includes('corporate giving')) {
+      window.open('https://info.submittable.com/start-build-effective-csr-program-download')
+    }
+    else {
+      console.log("something went wrong")
+    }
+  }
+  return (
     <Wrapper open={open}>
       <CloseButton onClick={() => setOpen(false)} src="https://blog.submittable.com/wp-content/uploads/Modal-Close-Button.svg" />
       <InnerWrapper>
@@ -153,10 +187,10 @@ function App() {
             <Backdrop src="https://blog.submittable.com/wp-content/uploads/Circle.svg" />
             <PDFImage src="https://blog.submittable.com/wp-content/uploads/EOY_numbers_2019_blog-03-1-1.png" />
           </BackdropWrapper>
-          <div>
+          <TextSection>
             <h3>Get the PDF guide</h3>
             <p>Download the guide to boosting your opportunity with Submittable promotions.</p>
-          </div>
+          </TextSection>
         </PDFWrapper>
         <FormWrapper>
           <Headlines>
@@ -168,11 +202,15 @@ function App() {
             columns={2}
             fullWidthFields={['email', 'company']}
             placeholders={placeholders}
+            onSubmit={() => {
+              setOpen(false)
+              redirect()
+            }}
           />
         </FormWrapper>
       </InnerWrapper>
     </Wrapper>
-  ]
+  )
 }
 
 export default App;
