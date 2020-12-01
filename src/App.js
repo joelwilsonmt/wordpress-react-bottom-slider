@@ -15,11 +15,12 @@ const Wrapper = styled.div`
   position: fixed;
   left: 0;
   z-index: 2147483002; /* this oddly specific z-index is to lay over Intercom's dialog, which has a z-index of 2147483001 */
-  ${props => props.open ? `bottom: 0;` : `bottom: -69vh;`}
+  ${props => props.open ? `bottom: 0;` : `bottom: -100vh;`}
   ${screenQuery.medium}{
     ${props => props.open ? `bottom: 0;` : `bottom: -100vh;`}
   }
   box-shadow: 0 12px 14px 10px rgba(0,0,0,.5);
+  overflow: scroll;
 `
 const InnerWrapper = styled.div`
   padding: 5%;
@@ -27,11 +28,11 @@ const InnerWrapper = styled.div`
   margin: 0 auto;
   color: #333;
   display: grid;
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: 2fr 2fr;
   grid-column-gap: ${gridGap};
   align-items: center;
   width: 90%;
-  max-width: 1110px;
+  max-width: 1240px;
   ${screenQuery.medium}{
     grid-template-columns: 1fr;
     grid-row-gap: 25px;
@@ -46,6 +47,7 @@ const PDFWrapper = styled.div`
     grid-template-columns: 1fr;
     grid-row-gap: 20px;
   }
+  justify-content: center;
 `
 const BackdropWrapper = styled.div`
   position: relative;
@@ -55,7 +57,7 @@ const BackdropWrapper = styled.div`
     max-width: 55%;
     margin: auto;
   }
-  @media screen and (max-width: 325px){
+  @media screen and (max-width: 375px){
     display: none;
   }
 `
@@ -74,6 +76,7 @@ const PDFImage = styled.img`
   ${screenQuery.mobile}{
     max-height: 25vh;
   }
+  
 `
 const TextSection = styled.div`
   order: 2;
@@ -112,7 +115,7 @@ const CloseButton = styled.img`
 `
 
 
-
+const grantsImage = 'https://blog.submittable.com/wp-content/uploads/grants-pdf-image.png'
 
 function App() {
   const [open, setOpen] = useState(false)
@@ -125,7 +128,7 @@ function App() {
   if (children) { children.forEach(child => tags.push(child.innerHTML.toLowerCase())) }
 
   const shouldShow = () => {
-    const hasTags = tags.includes('grants') || tags.includes('corporate giving')
+    const hasTags = tags.includes('grants')
     if (!seen && hasTags) {
       // console.log("slider hasn't been seen and page has tags", seen)
       return true
@@ -133,13 +136,12 @@ function App() {
     else return false
   }
 
-  const authorDiv = document.getElementsByClassName('author')[0]
-
   useEffect(() => {
+    const authorDiv = document.getElementsByClassName('author')[0]
     const handleScroll = () => {
       if (authorDiv) {
-        const { bottom } = authorDiv.getBoundingClientRect()
-        if (bottom - window.innerHeight < 0 && shouldShow()) {
+        const { top } = authorDiv.getBoundingClientRect()
+        if (top - window.innerHeight < 0 && shouldShow()) {
           setOpen(true)
           setHasBeenSeen(true)
         }
@@ -148,60 +150,36 @@ function App() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   })
-  const placeholders = [
-    {
-      name: 'email',
-      placeholder: 'Enter your email'
-    },
-    {
-      name: 'firstname',
-      placeholder: 'First name'
-    },
-    {
-      name: 'lastname',
-      placeholder: 'Last name'
-    },
-    {
-      name: 'company',
-      placeholder: 'Company'
-    }
-  ]
 
   const redirect = () => {
     if (tags.includes('grants')) {
-      window.open('https://info.submittable.com/transforming-grantmaking-maximizing-impact-through-improved-grants-management-download')
-    }
-    else if (tags.includes('corporate giving')) {
-      window.open('https://info.submittable.com/start-build-effective-csr-program-download')
+      window.open('https://www.submittable.com/thank-you-transforming-grantmaking-improving-grant-management-guide/')
     }
     else {
       console.log("something went wrong")
     }
   }
+
   return (
-    <Wrapper open={open}>
+    <Wrapper className={open ? "bottom_slider_open" : ""} open={open}>
       <CloseButton onClick={() => setOpen(false)} src="https://blog.submittable.com/wp-content/uploads/Modal-Close-Button.svg" />
       <InnerWrapper>
         <PDFWrapper>
           <BackdropWrapper>
             <Backdrop src="https://blog.submittable.com/wp-content/uploads/Circle.svg" />
-            <PDFImage src="https://blog.submittable.com/wp-content/uploads/EOY_numbers_2019_blog-03-1-1.png" />
+            <PDFImage src={grantsImage} />
           </BackdropWrapper>
           <TextSection>
-            <h3>Get the PDF guide</h3>
-            <p>Download the guide to boosting your opportunity with Submittable promotions.</p>
+            <h3>Transforming Grantmaking</h3>
+            <p>Today’s grantmaking space is awash in change—these are the key trends to follow.</p>
           </TextSection>
         </PDFWrapper>
         <FormWrapper>
           <Headlines>
-            <h2>Form Headline</h2>
-            <h5>Form Subheadline</h5>
+            <h2>Get the guide</h2>
+            <h5>If you enjoyed this post, you’ll love this free guide.</h5>
           </Headlines>
           <Form
-            formId='0d6a37f1-36ae-4560-8060-c1972828d394'
-            columns={2}
-            fullWidthFields={['email', 'company']}
-            placeholders={placeholders}
             onSubmit={() => {
               setOpen(false)
               redirect()
