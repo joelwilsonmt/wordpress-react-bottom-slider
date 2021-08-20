@@ -114,9 +114,6 @@ const CloseButton = styled.img`
   }
 `
 
-
-const grantsImage = 'https://blog.submittable.com/wp-content/uploads/grants-pdf-image.png'
-
 function App() {
   const [open, setOpen] = useState(false)
   const [seen, setHasBeenSeen] = useState(false)
@@ -136,6 +133,8 @@ function App() {
     else return false
   }
 
+
+
   useEffect(() => {
     const authorDiv = document.getElementsByClassName('author')[0]
     const handleScroll = () => {
@@ -151,14 +150,25 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll)
   })
 
+  console.log("window options found:", window.bottom_slider)
+  const settings = window.bottom_slider || // or:
+  {
+    image: 'https://blog.submittable.com/wp-content/uploads/Buyers-Guide-Blog-CTA-Image.png',
+    form_url: 'https://go.submittable.com/l/897841/2020-11-30/2b58',
+    redirect_url: 'https://www.submittable.com/guides/the-next-generation-of-grants-management-software/',
+    cta_header: 'The Next Generation of Grants Management Software',
+    cta_subheader: "A buyer's guide for the new era of philanthropy"
+  }
+
   const redirect = () => {
     if (tags.includes('grants')) {
-      window.open('https://www.submittable.com/thank-you-transforming-grantmaking-improving-grant-management-guide/')
+      window.open(settings.redirect_url)
     }
     else {
       console.log("something went wrong")
     }
   }
+
 
   return (
     <Wrapper className={open ? "bottom_slider_open" : ""} open={open}>
@@ -167,11 +177,11 @@ function App() {
         <PDFWrapper>
           <BackdropWrapper>
             <Backdrop src="https://blog.submittable.com/wp-content/uploads/Circle.svg" />
-            <PDFImage src={grantsImage} />
+            <PDFImage src={settings.image} />
           </BackdropWrapper>
           <TextSection>
-            <h3>Transforming Grantmaking</h3>
-            <p>Today’s grantmaking space is awash in change—these are the key trends to follow.</p>
+            <h3>{settings.cta_header}</h3>
+            <p>{settings.cta_subheader}</p>
           </TextSection>
         </PDFWrapper>
         <FormWrapper>
@@ -180,6 +190,7 @@ function App() {
             <h5>If you enjoyed this post, you’ll love this free guide.</h5>
           </Headlines>
           <Form
+            formUrl={settings.form_url}
             onSubmit={() => {
               setOpen(false)
               redirect()
