@@ -155,7 +155,7 @@ function App() {
   {
     image: 'https://blog.submittable.com/wp-content/uploads/Buyers-Guide-Blog-CTA-Image.png',
     form_url: 'https://go.submittable.com/l/897841/2020-11-30/2b58',
-    redirect_url: 'https://www.submittable.com/guides/the-next-generation-of-grants-management-software/',
+    redirect_url: 'https://www.submittable.com/thank-you/guides/the-next-generation-of-grants-management-software/',
     cta_header: 'The Next Generation of Grants Management Software',
     cta_subheader: "A buyer's guide for the new era of philanthropy"
   }
