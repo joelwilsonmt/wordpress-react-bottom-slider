@@ -25,7 +25,6 @@ export default React.memo((props) => {
 				});
 			}
 		});
-		let lead = {};
 
 		// must remove these children else becomes unwieldy:
 		return () => {
