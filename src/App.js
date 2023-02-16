@@ -191,13 +191,7 @@ function App() {
 						<h2>Get the guide</h2>
 						<h5>If you enjoyed this post, you’ll love this free guide.</h5>
 					</Headlines>
-					<Form
-						formUrl={settings.form_id}
-						onSubmit={() => {
-							setOpen(false);
-							redirect();
-						}}
-					/>
+					<Form formId={settings.form_id} />
 				</FormWrapper>
 			</InnerWrapper>
 		</Wrapper>
