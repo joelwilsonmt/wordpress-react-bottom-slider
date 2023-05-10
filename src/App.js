@@ -153,20 +153,11 @@ function App() {
 	console.log("window options found:", window.bottom_slider);
 	const settings = window.bottom_slider || {
 		// or:
-		image: "https://blog.submittable.com/wp-content/uploads/Buyers-Guide-Blog-CTA-Image.png",
-		form_id: "f7518869-f5e0-4565-ab71-da9be1ecc236",
-		redirect_url:
-			"https://www.submittable.com/thank-you/guides/the-next-generation-of-grants-management-software/",
+		image:
+			"https://blog.submittable.com/wp-content/uploads/TheNextEvolutionofGrantManagementSoftware_Submittable_CoverImage.jpg",
+		form_id: "d5e7be0f-a4b3-4e72-a849-bd8e3a49b8be",
 		cta_header: "The Next Generation of Grants Management Software",
 		cta_subheader: "A buyer's guide for the new era of philanthropy",
-	};
-
-	const redirect = () => {
-		if (tags.includes("grants")) {
-			window.open(settings.redirect_url);
-		} else {
-			console.log("something went wrong");
-		}
 	};
 
 	return (
